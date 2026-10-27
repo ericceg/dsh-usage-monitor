@@ -58,8 +58,25 @@ loaded.apply(ctx)
 
 const keys = registrations.map(r => r.key + ':' + r.id)
 console.log('registrations:', keys.join(', '))
-for (const expected of ['sidebar.footer.action:dsh-credits', 'conversation.composer.dock:credits', 'shell.overlay:dsh-credits-panel']) {
+for (const expected of [
+  'sidebar.footer.action:dsh-credits',
+  'conversation.composer.dock:credits',
+  'shell.overlay:dsh-credits-card',
+  'shell.overlay:dsh-credits-panel',
+]) {
   if (!keys.includes(expected)) throw new Error('missing registration ' + expected)
 }
 if (styles.length !== 1) throw new Error('expected one style element, got ' + styles.length)
-console.log('smoke ok; style bytes:', styles[0].textContent.length)
+const css = styles[0].textContent
+for (const needle of [
+  '.dsc-card ', '.dsc-card-moving', '.dsc-card-chevron', '.dsc-card-chat-meta',
+  '.dsc-card-body', '@keyframes dsc-card-in', 'z-index:100;', 'width:308px',
+]) {
+  if (!css.includes(needle)) throw new Error('missing card style ' + needle)
+}
+if (css.includes('width:242px')) throw new Error('collapsing must not change the card width')
+const cardCss = css.slice(css.indexOf('/* Floating, draggable credits card'), css.indexOf('@media (max-width: 560px)'))
+if (/brand-primary|state-(warn|error|success)-primary/.test(cardCss)) {
+  throw new Error('floating card must stay monochrome')
+}
+console.log('smoke ok; style bytes:', css.length)

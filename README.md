@@ -3,11 +3,21 @@
 Always-visible DeepSeek credits and usage for the DSH Web GUI. No need to open
 Settings → Account.
 
+- **Floating card** — a persistent card that floats above the app's content
+  and can be dragged anywhere in the window. It is monochrome and reports
+  Swiss francs only: total left, this chat, today, the month, all time, and
+  the last 14 days of spend. The card keeps a constant width; the chevron, a
+  double-click on the header, or Enter collapses it to the essentials. In a
+  chat it adds the chat's token count, cache-hit rate and model; outside a
+  chat it lists the last few chats from this device. Dragging follows the
+  pointer with a short spring, a flick keeps gliding, and the position plus
+  collapsed state persist per device.
 - **Sidebar chip** — total credits left, in CHF, above the Settings / account
   row. A dot turns amber when the balance drops below a configurable threshold.
 - **Composer pill** — an estimated cost for the current chat, next to the
   existing token/cache statistics: `≈ CHF 0.16`.
-- **Details panel** — click either surface to see:
+- **Details panel** — click the chip, the pill, or the card's **Details** button
+  to see:
   - total left (CHF + native wallet amounts)
   - this chat (estimated), today, this month, all time
   - topped-up and granted balances
@@ -17,8 +27,9 @@ Settings → Account.
   - the live FX rate and the pricing assumption used for the chat estimate
   - refresh and a link to the Platform usage page
 
-All money figures are converted to CHF; native CNY/USD amounts are kept
-alongside so the conversion is auditable.
+All money figures in the floating card are Swiss francs only. The details
+panel converts every figure to CHF and keeps the native CNY/USD amounts
+alongside so the conversion stays auditable.
 
 ## Data sources
 
@@ -28,6 +39,7 @@ alongside so the conversion is auditable.
 | This month's cost, daily costs, per-model costs, tokens | Platform `GET /api/v0/usage/cost` and `GET /api/v0/usage/amount` (private dashboard endpoints, the same ones the Platform usage page loads) |
 | CHF rate | [Frankfurter](https://frankfurter.dev/) ECB reference rates, cached for 6 hours, with configurable fallback |
 | Per-chat estimate | DSH's provider-reported `tokenUsage` session projection × current DeepSeek list prices |
+| Recent chats on the floating card | Recorded locally when you leave a chat; stored in `localStorage`, never sent anywhere |
 
 The Platform grant is read on the Host only. The browser route returns
 aggregates and never receives an account token. The route reuses
@@ -59,6 +71,7 @@ Every field is optional. Put overrides in the profile's `cordis.patch.yml`
   config:
     defaultModel: deepseek-flash   # model used for the per-chat estimate
     lowBalanceChf: 2               # amber warning below this CHF amount
+    floatingCard: true             # show the draggable credits card
     refreshSeconds: 60             # client poll interval
     fxFallbackRates:
       CNY: 8.05
@@ -105,6 +118,14 @@ Per 1M tokens, CNY (off-peak / peak) and USD (off-peak / peak):
 
 Update `PRICE_TABLE` in `lib/index.js` if DeepSeek changes list prices.
 
+## Preview
+
+The floating card, expanded in a chat and collapsed to the essentials:
+
+![Floating credits card](docs/preview-card.png)
+
+![Collapsed credits card](docs/preview-card-compact.png)
+
 ## Development checks
 
 ```sh
@@ -123,7 +144,7 @@ host route outside the app; production code always goes through
 | File | Role |
 |---|---|
 | `lib/index.js` | Host half: authenticated `/api/dsh-credits` route, Platform queries, FX cache, price table |
-| `lib/client.js` | Browser bundle: sidebar chip, composer pill, details panel, shared poller |
+| `lib/client.js` | Browser bundle: floating card, sidebar chip, composer pill, details panel, shared poller |
 | `cordis.patch.yml` | Bundle layer that mounts the host half |
 | `test/client-smoke.mjs` | Loads the bundle with a fake module loader/DOM/slots |
 | `test/host-live.mjs` | Live probe against the signed-in Platform account |
