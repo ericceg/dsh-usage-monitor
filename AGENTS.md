@@ -38,11 +38,13 @@ Add a body only when the *why* is not obvious; wrap it at 72 columns.
 node --check lib/index.js
 node --check lib/client.js
 node test/client-smoke.mjs      # bundle format + slot registrations
+node test/client-render.mjs     # renders the surfaces with a fake React
 node test/host-live.mjs         # live Platform query (needs a signed-in account)
 ```
 
 `test/host-live.mjs` touches the network and the local credential store, so it
-is not required for every commit; the syntax checks and `client-smoke` are.
+is not required for every commit; the syntax checks, `client-smoke` and
+`client-render` are.
 
 ## Code conventions
 

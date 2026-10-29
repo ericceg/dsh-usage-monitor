@@ -36,7 +36,8 @@ const react = {
 
 // The loader facade receives the bundle through window.__ModuleLoader__.load;
 // evaluate the file so it registers the factory.
-new Function('window', readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8'))(globalThis.window)
+const bundleSource = readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+new Function('window', bundleSource)(globalThis.window)
 if (loaded === null) throw new Error('bundle did not register')
 console.log('exports:', Object.keys(loaded).sort().join(', '))
 if (loaded.name !== 'dsh-credits') throw new Error('bad name')
@@ -63,6 +64,7 @@ for (const expected of [
   'conversation.composer.dock:credits',
   'shell.overlay:dsh-credits-card',
   'shell.overlay:dsh-credits-panel',
+  'settings.general.item:dsh-credits-floating-card',
 ]) {
   if (!keys.includes(expected)) throw new Error('missing registration ' + expected)
 }
@@ -71,10 +73,15 @@ const css = styles[0].textContent
 for (const needle of [
   '.dsc-card ', '.dsc-card-moving', '.dsc-card-chevron', '.dsc-card-chat-meta',
   '.dsc-card-body', '@keyframes dsc-card-in', 'z-index:100;', 'width:308px',
+  '.dsc-spark-slot', '.dsc-spark-tip', '.dsc-spark-tip-date', '.dsc-spark-tip-sub',
+  '.dsc-setting-row', '.dsc-switch[data-on="true"]', '.dsc-panel-setting',
 ]) {
   if (!css.includes(needle)) throw new Error('missing card style ' + needle)
 }
 if (css.includes('width:242px')) throw new Error('collapsing must not change the card width')
+for (const needle of ["className: 'dsc-spark-tip'", 'isCardVisible', 'formatExact', 'showCard']) {
+  if (!bundleSource.includes(needle)) throw new Error('missing bundle feature ' + needle)
+}
 const cardCss = css.slice(css.indexOf('/* Floating, draggable credits card'), css.indexOf('@media (max-width: 560px)'))
 if (/brand-primary|state-(warn|error|success)-primary/.test(cardCss)) {
   throw new Error('floating card must stay monochrome')

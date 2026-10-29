@@ -6,12 +6,18 @@ Settings → Account.
 - **Floating card** — a persistent card that floats above the app's content
   and can be dragged anywhere in the window. It is monochrome and reports
   Swiss francs only: total left, this chat, today, the month, all time, and
-  the last 14 days of spend. The card keeps a constant width; the chevron, a
-  double-click on the header, or Enter collapses it to the essentials. In a
-  chat it adds the chat's token count, cache-hit rate and model; outside a
-  chat it lists the last few chats from this device. Dragging follows the
-  pointer with a short spring, a flick keeps gliding, and the position plus
-  collapsed state persist per device.
+  the last 14 days of spend. Hovering a bar in that histogram — or focusing
+  the histogram and using the arrow keys — shows the day's exact CHF amount.
+  The card keeps a constant width; the chevron, a double-click on the header,
+  or Enter collapses it to the essentials. In a chat it adds the chat's token
+  count, cache-hit rate and model; outside a chat it lists the last few chats
+  from this device. Dragging follows the pointer with a short spring, a flick
+  keeps gliding, and the position, collapsed state and visibility persist per
+  device.
+- **Settings → General** — a **Floating credits card** switch hides or shows
+  the card on this device. The choice is stored in `localStorage` and starts
+  from the Host's `floatingCard` config. The same switch sits at the bottom of
+  the details panel.
 - **Sidebar chip** — total credits left, in CHF, above the Settings / account
   row. A dot turns amber when the balance drops below a configurable threshold.
 - **Composer pill** — an estimated cost for the current chat, next to the
@@ -21,15 +27,19 @@ Settings → Account.
   - total left (CHF + native wallet amounts)
   - this chat (estimated), today, this month, all time
   - topped-up and granted balances
-  - last 14 days of spend as a sparkline
+  - last 14 days of spend as a histogram; hover a bar, or focus the histogram
+    and use the arrow keys, for that day's exact native amount and CHF value
   - this month's spend by model
   - this month's tokens: cache hit / miss / output / requests / cache-hit rate
   - the live FX rate and the pricing assumption used for the chat estimate
+  - a switch for the floating card
   - refresh and a link to the Platform usage page
 
-All money figures in the floating card are Swiss francs only. The details
-panel converts every figure to CHF and keeps the native CNY/USD amounts
-alongside so the conversion stays auditable.
+All money figures in the floating card are Swiss francs only, including its
+daily-spend histogram (the Platform reports that history in the wallet
+currency, so it is converted with the same FX rate as everything else). The
+details panel converts every figure to CHF and keeps the native CNY/USD
+amounts alongside so the conversion stays auditable.
 
 ## Data sources
 
@@ -71,7 +81,7 @@ Every field is optional. Put overrides in the profile's `cordis.patch.yml`
   config:
     defaultModel: deepseek-flash   # model used for the per-chat estimate
     lowBalanceChf: 2               # amber warning below this CHF amount
-    floatingCard: true             # show the draggable credits card
+    floatingCard: true             # initial card visibility; the Settings → General switch overrides it per device
     refreshSeconds: 60             # client poll interval
     fxFallbackRates:
       CNY: 8.05
@@ -132,6 +142,7 @@ The floating card, expanded in a chat and collapsed to the essentials:
 node --check lib/index.js
 node --check lib/client.js
 node test/client-smoke.mjs      # bundle format + slot registrations
+node test/client-render.mjs     # renders the surfaces against a fake React
 node test/host-live.mjs         # live Platform query using the local grant
 ```
 
@@ -144,7 +155,8 @@ host route outside the app; production code always goes through
 | File | Role |
 |---|---|
 | `lib/index.js` | Host half: authenticated `/api/dsh-credits` route, Platform queries, FX cache, price table |
-| `lib/client.js` | Browser bundle: floating card, sidebar chip, composer pill, details panel, shared poller |
+| `lib/client.js` | Browser bundle: floating card, sidebar chip, composer pill, details panel, Settings → General row, shared poller |
 | `cordis.patch.yml` | Bundle layer that mounts the host half |
 | `test/client-smoke.mjs` | Loads the bundle with a fake module loader/DOM/slots |
+| `test/client-render.mjs` | Renders the registered surfaces with a fake React (no browser) |
 | `test/host-live.mjs` | Live probe against the signed-in Platform account |
