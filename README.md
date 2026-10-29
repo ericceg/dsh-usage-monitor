@@ -1,29 +1,29 @@
 # dsh-usage-monitor
 
-[![CI](https://github.com/ericceg/dsh-usage-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/ericceg/dsh-usage-monitor/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey)
+![DSH](https://img.shields.io/badge/DSH-0.2.x-green)
+![Version](https://img.shields.io/badge/version-v0.1.0-blue)
 
-Always-visible DeepSeek credits in the DSH Web GUI: balance left, spend per
-chat, today, this month and all time — in Swiss francs, without opening
-Settings → Account. The whole UI is monochrome; no accent or status colours.
+**Always-visible DeepSeek credits in the DSH Web GUI.**
 
-## Features
+Balance left, spend per chat, today, this month and all time — in Swiss francs,
+without opening Settings → Account. A draggable card, a sidebar chip and a
+composer pill show the numbers where you already work, and the whole UI is
+monochrome: no accent or status colours.
 
-- **Floating card** — draggable, CHF only. Total left, this chat, today, this
-  month, all time and a 14-day histogram (hover or arrow-key a bar for the
-  exact amount). Double-click the header, the chevron or Enter collapses it;
-  position, collapsed state and visibility persist per device. In a chat it
-  adds tokens, cache-hit rate and model, outside one the recent chats.
-- **Sidebar chip** — credits left in CHF above the Settings row; click for
-  details. A hollow dot marks a low balance.
-- **Composer pill** — estimated cost of the current chat, `≈ CHF 0.16`.
-- **Details panel** — balance, this chat/today/month/all-time, top-up and
-  granted balances, daily histogram, spend by model, token counts, FX rate,
-  refresh and a link to the Platform usage page.
-- **Settings → General** — a switch to show or hide the card on this device
-  (the same switch is at the bottom of the panel).
+## Why I Built This
 
-## Install
+I check my DeepSeek balance constantly, and opening Settings → Account every
+time interrupts whatever I was doing. The account page also only shows totals:
+it cannot tell me what the chat I am in has cost so far.
+
+So I put the numbers into DSH's existing chrome instead. A floating card covers
+the whole picture, a chip in the sidebar keeps the balance in view and a pill in
+the composer prices the current chat. Everything is converted to CHF, follows
+the app's monochrome theme, and the account token stays on the host.
+
+## Installation
 
 Requires DeepSeek Harness 0.2.x and a signed-in DeepSeek account. From a
 checkout:
@@ -40,7 +40,23 @@ dsh plugin --profile desktop add git+https://github.com/ericceg/dsh-usage-monito
 
 Replace `desktop` with your profile name.
 
-## Configure
+## What It Does
+
+- **Floating card** — draggable, CHF only. Total left, this chat, today, this
+  month, all time and a 14-day histogram (hover or arrow-key a bar for the
+  exact amount). Double-click the header, the chevron or Enter collapses it;
+  position, collapsed state and visibility persist per device. In a chat it
+  adds tokens, cache-hit rate and model; outside one, the recent chats.
+- **Sidebar chip** — credits left in CHF above the Settings row; click for
+  details. A hollow dot marks a low balance.
+- **Composer pill** — estimated cost of the current chat, `≈ CHF 0.16`.
+- **Details panel** — balance, this chat/today/month/all-time, top-up and
+  granted balances, daily histogram, spend by model, token counts, FX rate,
+  refresh and a link to the Platform usage page.
+- **Settings → General** — a switch to show or hide the card on this device
+  (the same switch is at the bottom of the panel).
+
+## Configuration
 
 Optional overrides in the profile's `cordis.patch.yml`:
 
@@ -93,4 +109,4 @@ node test/host-live.mjs   # live Platform probe, needs a signed-in account
 
 ## License
 
-[MIT](LICENSE)
+MIT. See [LICENSE](LICENSE).
