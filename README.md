@@ -1,7 +1,14 @@
-# dsh-credits
+# dsh-usage-monitor
+
+[![CI](https://github.com/ericceg/dsh-usage-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/ericceg/dsh-usage-monitor/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Always-visible DeepSeek credits and usage for the DSH Web GUI. No need to open
 Settings → Account.
+
+![Floating credits card over a chat](docs/preview-card.png)
+
+## Features
 
 - **Floating card** — a persistent card that floats above the app's content
   and can be dragged anywhere in the window. It is monochrome and reports
@@ -41,32 +48,32 @@ currency, so it is converted with the same FX rate as everything else). The
 details panel converts every figure to CHF and keeps the native CNY/USD
 amounts alongside so the conversion stays auditable.
 
-## Data sources
+## Requirements
 
-| Data | Source |
-|---|---|
-| Wallet balance, bonus balance, all-time spend | `ctx.deepseekAccount.getPlatformSession()` → Platform `GET /api/v0/users/get_user_summary` |
-| This month's cost, daily costs, per-model costs, tokens | Platform `GET /api/v0/usage/cost` and `GET /api/v0/usage/amount` (private dashboard endpoints, the same ones the Platform usage page loads) |
-| CHF rate | [Frankfurter](https://frankfurter.dev/) ECB reference rates, cached for 6 hours, with configurable fallback |
-| Per-chat estimate | DSH's provider-reported `tokenUsage` session projection × current DeepSeek list prices |
-| Recent chats on the floating card | Recorded locally when you leave a chat; stored in `localStorage`, never sent anywhere |
-
-The Platform grant is read on the Host only. The browser route returns
-aggregates and never receives an account token. The route reuses
-`ctx.connection.admit()` so it is readable only by the authenticated app
-document (unauthenticated loopback requests get `401`).
+- **DeepSeek Harness 0.2.x.** The bundle declares
+  `"engines": { "dsh": ">=0.2.0 <0.3.0" }`; the plugin manager refuses
+  incompatible runtimes instead of loading a half-working plugin.
+- **A signed-in DeepSeek account** for the numbers. Without one, the surfaces
+  show a sign-in hint instead of figures.
+- **Node.js 20+** to run the development checks; the app itself runs the plugin.
 
 ## Install
 
-From a checkout of this directory:
+From a checkout of this repository:
 
 ```sh
-dsh plugin --profile desktop add link:/path/to/dsh-credits
+dsh plugin --profile desktop add link:/path/to/dsh-usage-monitor
+```
+
+Or straight from GitHub:
+
+```sh
+dsh plugin --profile desktop add git+https://github.com/ericceg/dsh-usage-monitor.git
 ```
 
 The package declares a bundle patch, so the command adds both the dependency
-and the bundle. HMR picks it up; no restart is required on a profile with
-configuration watches.
+and the bundle to the profile. HMR picks it up; no restart is required on a
+profile with configuration watches.
 
 For a normal `dsh web` profile, replace `desktop` with that profile name.
 
@@ -76,8 +83,8 @@ Every field is optional. Put overrides in the profile's `cordis.patch.yml`
 (note `config:` — a top-level key is ignored by the loader):
 
 ```yaml
-- id: dsh-credits
-  name: dsh-credits
+- id: dsh-usage-monitor
+  name: dsh-usage-monitor
   config:
     defaultModel: deepseek-flash   # model used for the per-chat estimate
     lowBalanceChf: 2               # amber warning below this CHF amount
@@ -90,14 +97,29 @@ Every field is optional. Put overrides in the profile's `cordis.patch.yml`
 
 The loader row config is merged over the defaults in `lib/index.js`.
 
-## Uninstall
+## Privacy
 
-```sh
-dsh plugin --profile desktop remove dsh-credits
-```
+- The DeepSeek Platform grant is read on the Host only, through DSH's account
+  service (`ctx.deepseekAccount`). The browser route returns aggregates and
+  never receives an account token.
+- The route reuses `ctx.connection.admit()`, so it is readable only by the
+  authenticated app document; unauthenticated loopback requests get `401`.
+- The plugin sends network requests only to the DeepSeek Platform endpoints it
+  documents below and to `api.frankfurter.dev` for the CHF reference rate.
+- The card position, collapsed state, the floating-card preference and the
+  recent-chat list live in `localStorage` on this device and are never sent
+  anywhere. The recent-chat list is recorded locally when you leave a chat.
+- No telemetry, analytics or crash reporting.
 
-If you added a `- id: dsh-credits` override to the profile's
-`cordis.patch.yml`, delete that block as well.
+## Data sources
+
+| Data | Source |
+|---|---|
+| Wallet balance, bonus balance, all-time spend | `ctx.deepseekAccount.getPlatformSession()` → Platform `GET /api/v0/users/get_user_summary` |
+| This month's cost, daily costs, per-model costs, tokens | Platform `GET /api/v0/usage/cost` and `GET /api/v0/usage/amount` (private dashboard endpoints, the same ones the Platform usage page loads) |
+| CHF rate | [Frankfurter](https://frankfurter.dev/) ECB reference rates, cached for 6 hours, with configurable fallback |
+| Per-chat estimate | DSH's provider-reported `tokenUsage` session projection × current DeepSeek list prices |
+| Recent chats on the floating card | Recorded locally when you leave a chat; stored in `localStorage`, never sent anywhere |
 
 ## Estimate limits
 
@@ -126,17 +148,20 @@ Per 1M tokens, CNY (off-peak / peak) and USD (off-peak / peak):
 | `deepseek-flash` | $0.003 / $0.006 | $0.15 / $0.30 | $0.60 / $1.20 |
 | `deepseek-v4-pro` | $0.022 / $0.044 | $0.66 / $1.32 | $1.98 / $3.96 |
 
-Update `PRICE_TABLE` in `lib/index.js` if DeepSeek changes list prices.
+Update `PRICE_TABLE` in `lib/index.js` if DeepSeek changes list prices, and keep
+this table in sync.
 
 ## Preview
 
 The floating card, expanded in a chat and collapsed to the essentials:
 
-![Floating credits card](docs/preview-card.png)
+![Expanded floating card](docs/preview-card.png)
 
-![Collapsed credits card](docs/preview-card-compact.png)
+![Collapsed floating card](docs/preview-card-compact.png)
 
 ## Development checks
+
+No dependencies to install; the tests use plain Node and a fake React:
 
 ```sh
 node --check lib/index.js
@@ -146,17 +171,33 @@ node test/client-render.mjs     # renders the surfaces against a fake React
 node test/host-live.mjs         # live Platform query using the local grant
 ```
 
-`test/host-live.mjs` reads the local account credential only to exercise the
-host route outside the app; production code always goes through
-`ctx.deepseekAccount`.
+`test/host-live.mjs` touches the network and the local credential store
+(`~/.dsh/.credentials.yaml`), so it is not required for every commit; the syntax
+checks, `client-smoke` and `client-render` are. CI runs exactly those three
+steps on every push to `main` and on every pull request.
 
-## Files
+## Project layout
 
 | File | Role |
 |---|---|
-| `lib/index.js` | Host half: authenticated `/api/dsh-credits` route, Platform queries, FX cache, price table |
+| `lib/index.js` | Host half: authenticated `/api/dsh-usage-monitor` route, Platform queries, FX cache, price table |
 | `lib/client.js` | Browser bundle: floating card, sidebar chip, composer pill, details panel, Settings → General row, shared poller |
 | `cordis.patch.yml` | Bundle layer that mounts the host half |
 | `test/client-smoke.mjs` | Loads the bundle with a fake module loader/DOM/slots |
 | `test/client-render.mjs` | Renders the registered surfaces with a fake React (no browser) |
 | `test/host-live.mjs` | Live probe against the signed-in Platform account |
+| `docs/` | Screenshots used by this README |
+| `.github/workflows/ci.yml` | CI: syntax plus bundle checks |
+
+## Uninstall
+
+```sh
+dsh plugin --profile desktop remove dsh-usage-monitor
+```
+
+If you added a `- id: dsh-usage-monitor` override to the profile's
+`cordis.patch.yml`, delete that block as well.
+
+## License
+
+[MIT](LICENSE)
