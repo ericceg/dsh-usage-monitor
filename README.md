@@ -7,9 +7,6 @@ Always-visible DeepSeek credits in the DSH Web GUI: balance left, spend per
 chat, today, this month and all time — in Swiss francs, without opening
 Settings → Account. The whole UI is monochrome; no accent or status colours.
 
-![Floating credits card over a chat](docs/preview-card.png)
-![The same card collapsed](docs/preview-card-compact.png)
-
 ## Features
 
 - **Floating card** — draggable, CHF only. Total left, this chat, today, this
