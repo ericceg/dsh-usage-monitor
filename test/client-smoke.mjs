@@ -40,7 +40,7 @@ const bundleSource = readFileSync(new URL('../lib/client.js', import.meta.url), 
 new Function('window', bundleSource)(globalThis.window)
 if (loaded === null) throw new Error('bundle did not register')
 console.log('exports:', Object.keys(loaded).sort().join(', '))
-if (loaded.name !== 'dsh-credits') throw new Error('bad name')
+if (loaded.name !== 'dsh-usage-monitor') throw new Error('bad name')
 if (!Array.isArray(loaded.inject)) throw new Error('bad inject')
 
 const slots = {
@@ -60,11 +60,11 @@ loaded.apply(ctx)
 const keys = registrations.map(r => r.key + ':' + r.id)
 console.log('registrations:', keys.join(', '))
 for (const expected of [
-  'sidebar.footer.action:dsh-credits',
-  'conversation.composer.dock:credits',
-  'shell.overlay:dsh-credits-card',
-  'shell.overlay:dsh-credits-panel',
-  'settings.general.item:dsh-credits-floating-card',
+  'sidebar.footer.action:dsh-usage-monitor',
+  'conversation.composer.dock:dsh-usage-monitor-pill',
+  'shell.overlay:dsh-usage-monitor-card',
+  'shell.overlay:dsh-usage-monitor-panel',
+  'settings.general.item:dsh-usage-monitor-floating-card',
 ]) {
   if (!keys.includes(expected)) throw new Error('missing registration ' + expected)
 }

@@ -25,7 +25,7 @@ const cfg = {
 }
 
 const tz = -new Date().getTimezoneOffset() * 60
-const body = await buildPayload(`/api/dsh-credits?tz=${tz}&force=1&version=0.2.1&locale=en`, account, cfg)
+const body = await buildPayload(`/api/dsh-usage-monitor?tz=${tz}&force=1&version=0.2.1&locale=en`, account, cfg)
 console.log(JSON.stringify({
   ok: body.ok,
   signedIn: body.signedIn,

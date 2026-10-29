@@ -206,32 +206,32 @@ function render(key, overrides = {}, hover = -1) {
 
 // --- details panel + histogram tooltip -------------------------------------
 
-const panel = render('shell.overlay:dsh-credits-panel')
+const panel = render('shell.overlay:dsh-usage-monitor-panel')
 for (const needle of ['Daily spend', 'This month by model', 'role="switch"', 'Floating card', 'dsc-spark-slot']) {
   if (!panel.includes(needle)) throw new Error('panel render missing ' + needle)
 }
 if (panel.includes('dsc-spark-tip')) throw new Error('tooltip must stay hidden until a bar is hovered')
 if (panel.includes('title="2026-10-28')) throw new Error('histogram must not rely on native title tooltips')
 
-const hovered = render('shell.overlay:dsh-credits-panel', {}, 1)
+const hovered = render('shell.overlay:dsh-usage-monitor-panel', {}, 1)
 for (const needle of ['role="tooltip"', 'dsc-spark-tip-value', '\u00a50.25', 'CHF 0.0311']) {
   if (!hovered.includes(needle)) throw new Error('hovered tooltip missing ' + needle)
 }
 
 // --- Settings → General row ------------------------------------------------
 
-const rowOff = render('settings.general.item:dsh-credits-floating-card', { showCard: false })
+const rowOff = render('settings.general.item:dsh-usage-monitor-floating-card', { showCard: false })
 if (!rowOff.includes('role="switch"') || !rowOff.includes('data-on="false"') || !rowOff.includes('aria-checked="false"')) {
   throw new Error('settings row must render an off switch')
 }
-const rowOn = render('settings.general.item:dsh-credits-floating-card', { showCard: true })
+const rowOn = render('settings.general.item:dsh-usage-monitor-floating-card', { showCard: true })
 if (!rowOn.includes('data-on="true"') || !rowOn.includes('aria-checked="true"')) {
   throw new Error('settings row must render an on switch')
 }
 // No explicit choice: the Host config decides.
-const hostOn = render('settings.general.item:dsh-credits-floating-card', { showCard: null })
+const hostOn = render('settings.general.item:dsh-usage-monitor-floating-card', { showCard: null })
 if (!hostOn.includes('data-on="true"')) throw new Error('Host default true must show the switch on')
-const hostOff = render('settings.general.item:dsh-credits-floating-card', {
+const hostOff = render('settings.general.item:dsh-usage-monitor-floating-card', {
   showCard: null, data: { ...fixture, floatingCard: false },
 })
 if (!hostOff.includes('data-on="false"')) throw new Error('Host default false must show the switch off')
@@ -240,12 +240,12 @@ if (!hostOff.includes('data-on="false"')) throw new Error('Host default false mu
 stored.clear()
 snapshot = stateWith({ showCard: true })
 hookName = ''
-const tree = expandNode(react.createElement(component('settings.general.item:dsh-credits-floating-card'), {}))
+const tree = expandNode(react.createElement(component('settings.general.item:dsh-usage-monitor-floating-card'), {}))
 const switchElement = findElement(tree, (node) => node.type === 'button'
   && node.props.role === 'switch')
 if (switchElement === null) throw new Error('settings row has no switch element')
 switchElement.props.onClick()
-const saved = stored.get('dsh-credits:settings:v1')
+const saved = stored.get('dsh-usage-monitor:settings:v1')
 if (saved !== JSON.stringify({ floatingCard: false })) {
   throw new Error('switch did not persist the preference: ' + String(saved))
 }
@@ -253,7 +253,7 @@ if (saved !== JSON.stringify({ floatingCard: false })) {
 // --- floating card visibility ---------------------------------------------
 
 function card(overrides) {
-  return render('shell.overlay:dsh-credits-card', overrides)
+  return render('shell.overlay:dsh-usage-monitor-card', overrides)
 }
 if (card({ showCard: false }) !== '') throw new Error('card must be hidden when the preference is off')
 if (card({ showCard: true }) === '') throw new Error('card must render when the preference is on')

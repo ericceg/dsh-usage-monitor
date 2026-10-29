@@ -1,5 +1,5 @@
-# dsh-credits bundle patch: mounts the host half that serves /api/dsh-credits.
+# dsh-usage-monitor bundle patch: mounts the host half that serves /api/dsh-usage-monitor.
 # The client half is loaded from package.json's dsh.client declaration.
 - insert:
-    - id: dsh-credits
-      name: 'dsh-credits'
+    - id: dsh-usage-monitor
+      name: 'dsh-usage-monitor'
