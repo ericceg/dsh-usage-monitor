@@ -7,10 +7,9 @@
 
 **Always-visible DeepSeek credits in the DSH Web GUI.**
 
-Balance left, spend per chat, today, this month and all time — in Swiss francs,
+Balance left, spend per chat, today, this month and all time in Swiss francs,
 without opening Settings → Account. A draggable card, a sidebar chip and a
-composer pill show the numbers where you already work, and the whole UI is
-monochrome: no accent or status colours.
+composer pill show the numbers where you already work.
 
 ## Why I Built This
 
@@ -42,18 +41,18 @@ Replace `desktop` with your profile name.
 
 ## What It Does
 
-- **Floating card** — draggable, CHF only. Total left, this chat, today, this
+- **Floating card**: draggable, CHF only. Total left, this chat, today, this
   month, all time and a 14-day histogram (hover or arrow-key a bar for the
-  exact amount). Double-click the header, the chevron or Enter collapses it;
-  position, collapsed state and visibility persist per device. In a chat it
-  adds tokens, cache-hit rate and model; outside one, the recent chats.
-- **Sidebar chip** — credits left in CHF above the Settings row; click for
+  exact amount). Double-click the header, the chevron or Enter collapses it.
+  Position, collapsed state and visibility persist per device. In a chat it
+  adds tokens, cache-hit rate and model. Outside one it shows the recent chats.
+- **Sidebar chip**: credits left in CHF above the Settings row. Click for
   details. A hollow dot marks a low balance.
-- **Composer pill** — estimated cost of the current chat, `≈ CHF 0.16`.
-- **Details panel** — balance, this chat/today/month/all-time, top-up and
+- **Composer pill**: estimated cost of the current chat, `≈ CHF 0.16`.
+- **Details panel**: balance, this chat/today/month/all-time, top-up and
   granted balances, daily histogram, spend by model, token counts, FX rate,
   refresh and a link to the Platform usage page.
-- **Settings → General** — a switch to show or hide the card on this device
+- **Settings → General**: a switch to show or hide the card on this device
   (the same switch is at the bottom of the panel).
 
 ## Configuration
@@ -75,7 +74,7 @@ Optional overrides in the profile's `cordis.patch.yml`:
 
 ## Privacy
 
-Balance and usage are read on the Host through DSH's account service; the
+Balance and usage are read on the Host through DSH's account service. The
 browser gets aggregates only and never an account token. Calls go only to the
 DeepSeek Platform and `api.frankfurter.dev` (ECB CHF rates, cached 6 hours).
 Card position, collapsed state, preference and recent chats stay in
@@ -84,9 +83,9 @@ Card position, collapsed state, preference and recent chats stay in
 ## Notes
 
 Per-chat cost is an **estimate** (provider-reported tokens × list prices, `≈`).
-Peak pricing is Beijing weekdays 09:00–12:00 and 14:00–18:00; holidays are not
+Peak pricing is Beijing weekdays 09:00–12:00 and 14:00–18:00. Holidays are not
 modelled. Monthly and daily usage come from private dashboard endpoints and may
-change without notice. Prices live in `PRICE_TABLE` in `lib/index.js`; per 1M
+change without notice. Prices live in `PRICE_TABLE` in `lib/index.js`. Per 1M
 tokens, off-peak / peak:
 
 | Model | Cache hit | Cache miss | Output |
@@ -98,7 +97,7 @@ tokens, off-peak / peak:
 
 ## Development
 
-No dependencies; plain Node (20+) and a fake React. CI runs the first three:
+No dependencies: plain Node (20+) and a fake React. CI runs the first three:
 
 ```sh
 node --check lib/index.js && node --check lib/client.js
