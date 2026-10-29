@@ -52,4 +52,7 @@ is not required for every commit; the syntax checks, `client-smoke` and
   Follow the existing style in each file; do not introduce new dependencies
   without good reason.
 - Update `README.md` when behaviour, configuration, or the file table changes.
+- The UI is monochrome: no brand, accent, or state colours. Use the neutral
+  `--dsw-alias-label-*` and `--dsw-alias-bg-*` tokens so the panel follows the
+  app theme.
 - Prices live in `PRICE_TABLE` in `lib/index.js`; keep `README.md` in sync.

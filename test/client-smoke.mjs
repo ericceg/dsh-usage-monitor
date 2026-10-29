@@ -82,8 +82,11 @@ if (css.includes('width:242px')) throw new Error('collapsing must not change the
 for (const needle of ["className: 'dsc-spark-tip'", 'isCardVisible', 'formatExact', 'showCard']) {
   if (!bundleSource.includes(needle)) throw new Error('missing bundle feature ' + needle)
 }
-const cardCss = css.slice(css.indexOf('/* Floating, draggable credits card'), css.indexOf('@media (max-width: 560px)'))
-if (/brand-primary|state-(warn|error|success)-primary/.test(cardCss)) {
-  throw new Error('floating card must stay monochrome')
+// The whole extension is monochrome: no brand colours, no state colours.
+if (/brand-primary|state-(warn|error|success)-primary/.test(css)) {
+  throw new Error('extension must stay monochrome (no brand or state colours)')
+}
+if (/#f5a623|#f56c6c|#3ecf8e|#4d6bfe|#ffb4b4/i.test(css)) {
+  throw new Error('extension must stay monochrome (no hard-coded accent colours)')
 }
 console.log('smoke ok; style bytes:', css.length)
