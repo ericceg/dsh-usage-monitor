@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Syntax and bundle checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax check
+        run: |
+          node --check lib/index.js
+          node --check lib/client.js
+      - name: Bundle smoke test
+        run: node test/client-smoke.mjs
+      - name: Render test
+        run: node test/client-render.mjs

@@ -1,5 +1,5 @@
 {
-  "name": "dsh-credits",
+  "name": "dsh-usage-monitor",
   "version": "0.1.0",
   "description": "Always-visible DeepSeek credits and usage for the DSH Web GUI: balance left, spend per chat, today/month/all-time, converted to CHF.",
   "type": "module",
@@ -32,5 +32,23 @@
       ]
     }
   },
-  "license": "MIT"
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "credits",
+    "usage",
+    "cost"
+  ],
+  "author": "Eric Ceglie",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericceg/dsh-usage-monitor.git"
+  },
+  "homepage": "https://github.com/ericceg/dsh-usage-monitor#readme",
+  "bugs": {
+    "url": "https://github.com/ericceg/dsh-usage-monitor/issues"
+  }
 }
